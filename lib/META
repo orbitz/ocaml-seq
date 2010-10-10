@@ -1,0 +1,6 @@
+name="seq"
+version="1.0.0"
+description="SEQ - Lazy sequences and IO"
+requires=""
+archive(byte)="seq.cma"
+archive(native)="seq.cmxa"
