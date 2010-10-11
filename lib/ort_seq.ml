@@ -7,23 +7,6 @@ let next s =
       Stream.Failure -> None
 
 
-let rec of_list =
-  function
-      [] -> 
-	[< >]
-    | x::xs -> 
-	[< 'x; of_list xs >]
-  
-let of_string s =
-  let rec of_string' idx =
-    if idx < String.length s then
-      let c = s.[idx] in
-      [< 'c; of_string' (idx + 1) >]
-    else
-      [< >]
-  in
-  of_string' 0
-
 
 let rec fold ~f ~init s =
   match next s with
@@ -31,7 +14,7 @@ let rec fold ~f ~init s =
 	fold ~f:f ~init:(f init v) s
     | None -> init
 
-let to_list s = List.rev (fold ~f:(fun a e -> e::a) ~init:[] s)
+
 
 (*
  * Takes a function and an initial value and returns a stream incrementally
@@ -107,3 +90,44 @@ let rec filter ~f s =
 	[< filter ~f:f s >]
     | None ->
       [< >]
+
+
+let rec chunk n s =
+  let rec chunk' a = function
+    | 0 -> [< 'List.rev a; chunk n s >]
+    | n -> begin
+      match next s with
+	| Some e ->
+	  chunk' (e::a) (n - 1)
+	| None -> begin
+	  match a with
+	    | [] ->
+	      [< >]
+	    | v ->
+	      [< 'List.rev a >]
+	end
+    end
+  in
+  chunk' [] n
+
+(*
+ * Conversion functions
+ *)
+let to_list s = List.rev (fold ~f:(fun a e -> e::a) ~init:[] s)
+
+let rec of_list =
+  function
+      [] -> 
+	[< >]
+    | x::xs -> 
+	[< 'x; of_list xs >]
+  
+let of_string s =
+  let rec of_string' idx =
+    if idx < String.length s then
+      let c = s.[idx] in
+      [< 'c; of_string' (idx + 1) >]
+    else
+      [< >]
+  in
+  of_string' 0
