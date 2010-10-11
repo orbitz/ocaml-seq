@@ -25,22 +25,21 @@ let of_string s =
   of_string' 0
 
 
-let rec fold_left f a s =
+let rec fold ~f ~init s =
   match next s with
       Some v ->
-	fold_left f (f a v) s
-    | None -> a
+	fold ~f:f ~init:(f init v) s
+    | None -> init
 
-
-let to_list s = List.rev (fold_left (fun a e -> e::a) [] s)
+let to_list s = List.rev (fold ~f:(fun a e -> e::a) ~init:[] s)
 
 (*
  * Takes a function and an initial value and returns a stream incrementally
  * calling the function
  *)
-let rec iterate f v = 
+let rec iterate ~f v = 
   let fv = f v in
-  [< 'fv; iterate f fv >]
+  [< 'fv; iterate ~f:f fv >]
 
 let rec take n s =
   if n > 0 then
@@ -49,6 +48,36 @@ let rec take n s =
       | None -> [< >]
   else
     [< >]
+
+let rec take_while ~f s =
+  match next s with
+    | Some e -> 
+      if f e then
+	[< 'e; take_while ~f:f s >]
+      else
+	[< 'e; s >]
+    | None ->
+      [< >]
+
+let rec drop n s =
+  if n > 0 then
+    match next s with
+      | Some _ ->
+	drop (n - 1) s
+      | None ->
+	[< >]
+  else
+    s
+
+let rec drop_while ~f s =
+  match next s with
+    | Some e ->
+      if f e then
+	drop_while ~f:f s
+      else
+	[< 'e; s >]
+    | None ->
+      [< >]
 
 (*
  * Given a sequene will iterate that sequence and for each
@@ -62,19 +91,19 @@ let rec enumerate ?(start = 0) ?(step = 1) seq =
     | None ->
 	[< >]
 
-let rec map f s =
+let rec map ~f s =
   match next s with
     | Some v ->
-	[< 'f v; map f s >]
+	[< 'f v; map ~f:f s >]
     | None ->
 	[< >]
 
-let rec filter f s =
+let rec filter ~f s =
   match next s with
     | Some v ->
       if f v then 
-	[< 'v; filter f s >]
+	[< 'v; filter ~f:f s >]
       else
-	[< filter f s >]
+	[< filter ~f:f s >]
     | None ->
       [< >]
