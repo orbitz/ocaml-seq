@@ -14,7 +14,8 @@ let rec fold ~f ~init s =
 	fold ~f:f ~init:(f init v) s
     | None -> init
 
-
+let consume ~f =
+  fold ~f:(fun () e -> f e) ~init:()
 
 (*
  * Takes a function and an initial value and returns a stream incrementally
