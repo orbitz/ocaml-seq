@@ -34,12 +34,12 @@ let rec take n s =
     [< >]
 
 let rec take_while ~f s =
-  match next s with
+  match Stream.peek s with
     | Some e -> 
       if f e then
-	[< 'e; take_while ~f:f s >]
+	[< 'Stream.next s; take_while ~f:f s >]
       else
-	[< 'e; s >]
+	[< >]
     | None ->
       [< >]
 
