@@ -54,12 +54,13 @@ let rec drop n s =
     s
 
 let rec drop_while ~f s =
-  match next s with
+  match Stream.peek s with
     | Some e ->
       if f e then
+	let _ = next s in
 	drop_while ~f:f s
       else
-	[< 'e; s >]
+	s
     | None ->
       [< >]
 
