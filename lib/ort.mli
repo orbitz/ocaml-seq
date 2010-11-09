@@ -2,6 +2,7 @@ module Seq :
   sig
     val next : 'a Stream.t -> 'a option
     val fold : f:('a -> 'b -> 'a) -> init:'a -> 'b Stream.t -> 'a
+    val consume : f:('a -> unit) -> 'a Stream.t -> unit
     val iterate : f:('a -> 'a) -> 'a -> 'a Stream.t
     val take : int -> 'a Stream.t -> 'a Stream.t
     val take_while : f:('a -> bool) -> 'a Stream.t -> 'a Stream.t
