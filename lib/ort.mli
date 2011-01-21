@@ -32,3 +32,10 @@ module Function :
     val const : 'a -> 'b -> 'a
     val identity : 'a -> 'a
   end
+module Fileutils :
+  sig
+    type file_path = Ort_fileutils.file_path
+    val join : file_path list -> file_path
+    val basename : file_path -> file_path
+    val dirname : file_path -> file_path
+  end

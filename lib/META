@@ -1,6 +1,6 @@
 name="seq"
 version="1.0.0"
 description="SEQ - Lazy sequences and IO"
-requires=""
+requires="core_extended"
 archive(byte)="seq.cma"
 archive(native)="seq.cmxa"
